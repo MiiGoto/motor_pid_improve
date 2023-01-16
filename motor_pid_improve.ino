@@ -60,24 +60,34 @@ void loop(void)
   //Serial.print(u[3]);
   //Serial.print(",");
 
-  u[0] = pid0.pid_out(u[0]);
-  u[1] = pid1.pid_out(u[1]);  
-  u[2] = pid2.pid_out(u[2]);
-  u[3] = pid3.pid_out(u[3]);
+  //u[0] = pid0.pid_out(u[0]);
+  //u[1] = pid1.pid_out(u[1]);  
+  //u[2] = pid2.pid_out(u[2]);
+  //u[3] = pid3.pid_out(u[3]);
   
-  for (int i = 0; i < 4; i++) {
+    u[0] = (int)(min(max(-16000, -vx - vy + vt), 16000));
+    u[1] = (int)(min(max(-16000, -vx + vy + vt), 16000));
+    u[2] = (int)(min(max(-16000, vx + vy + vt), 16000));
+    u[3] = (int)(min(max(-16000, vx - vy + vt), 16000)); 
+   
+  Serial.println(u[0]);
+  Serial.println(u[1]);
+  Serial.println(u[2]);
+  Serial.println(u[3]);
+
+   for (int i = 0; i < 4; i++) {
     msg.buf[i * 2] = u[i] >> 8;
     msg.buf[i * 2 + 1] = u[i] & 0xFF;
   }
-  Serial.print(pid0.debug());//現在速度
-  Serial.print(",");
-  Serial.print(pid1.debug());
-  Serial.print(",");
-  Serial.print(pid2.debug());  
-  Serial.print(",");
-  Serial.print(pid3.debug());
-  Serial.println("");
-  delay(10);
+  //Serial.print(pid0.debug());//現在速度
+  //Serial.print(",");
+  //Serial.print(pid1.debug());
+  //Serial.print(",");
+  //Serial.print(pid2.debug());  
+  //Serial.print(",");
+  //Serial.print(pid3.debug());
+  //Serial.println("");
+  //delay(10);
 }
 
 void timerInt() {
