@@ -65,7 +65,7 @@ void loop(void)
   u[2] = pid2.pid_out(u[2]);
   u[3] = pid3.pid_out(u[3]);
   
-    u[0] = (int)(min(max(-16000, -vx - vy + vt), 16000));
+    u[0] = (int)(min(max(-16000, -vx - vy + vt), 16000)); 
     u[1] = (int)(min(max(-16000, -vx + vy + vt), 16000));
     u[2] = (int)(min(max(-16000, vx + vy + vt), 16000));
     u[3] = (int)(min(max(-16000, vx - vy + vt), 16000)); 
