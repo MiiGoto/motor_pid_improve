@@ -1,6 +1,7 @@
 #include <MsTimer2.h>
 #include <FlexCAN.h>
 #include "PID.h"
+#include <math.h>
 
 typedef struct
 {
@@ -19,6 +20,17 @@ Pid pid2;
 Pid pid3;
 
 float vx, vy, vt;
+
+float rpm,mps;
+#define tire_dia 152//こういう感じに定数にしといても良いかも
+float rpm2mps(float rpm){//rpmをm/sに変換
+  mps=tire_dia*rpm/(60*19);  
+  return mps;
+}
+float mps2rpm(float mps){//m/sをrpmに変換
+  rpm=60*19*mps/tire_dia;
+  return rpm;
+}
 
 void setup(void)
 {
@@ -46,13 +58,20 @@ int cnt=0;
 void loop(void)
 {
   int u[4] = {0};
-  u[0] = 500;
-  u[1] = 500;
-  u[2] = 500;
-  u[3] = 500; //ここの数字はrpm指定、-5000~5000くらい
-  
-  Serial.print(u[0]);//目標速度
-  Serial.print(",");
+  //u[0] = 500;
+  //u[1] = 500;
+  //u[2] = 500;
+  //u[3] = 500; //ここの数字はrpm指定、-5000~5000くらい
+    
+  float vx=1.0, vy=0.0, vt=0.0;//ここが目標速度、この場合は前進方向に1m/s
+  float L=825.7;
+  u[0]=mps2rpm(-(1/sqrt(2.0))*vx+(1/sqrt(2.0))*vy+L*vt); //右前
+  u[1]=mps2rpm(-(1/sqrt(2.0))*vx-(1/sqrt(2.0))*vy+L*vt); //右後
+  u[2]=mps2rpm((1/sqrt(2.0))*vx-(1/sqrt(2.0))*vy+L*vt);//左後
+  u[3]=mps2rpm((1/sqrt(2.0))*vx+(1/sqrt(2.0))*vy+L*vt);//左前
+
+  //Serial.print(u[0]);//目標速度
+  //Serial.print(",");
   //Serial.print(u[1]);
   //Serial.print(",");
   //Serial.print(u[2]);
@@ -65,7 +84,7 @@ void loop(void)
   u[2] = pid2.pid_out(u[2]);
   u[3] = pid3.pid_out(u[3]);
   
-    u[0] = (int)(min(max(-16000, -vx - vy + vt), 16000)); 
+    u[0] = (int)(min(max(-16000, -vx - vy + vt), 16000));
     u[1] = (int)(min(max(-16000, -vx + vy + vt), 16000));
     u[2] = (int)(min(max(-16000, vx + vy + vt), 16000));
     u[3] = (int)(min(max(-16000, vx - vy + vt), 16000)); 
@@ -87,7 +106,7 @@ void loop(void)
   //Serial.print(",");
   //Serial.print(pid3.debug());
   //Serial.println("");
-  //delay(10);
+  delay(10); //シリアル通信が終わる前に次の通信が始まってしまうのを防ぐ
 }
 
 void timerInt() {
