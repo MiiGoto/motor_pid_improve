@@ -62,13 +62,15 @@ void loop(void)
   //u[1] = 500;
   //u[2] = 500;
   //u[3] = 500; //ここの数字はrpm指定、-5000~5000くらい
-    
+
+  #define sinphi 0.707106781   //三角関数の計算は重たいので近似値を置いておくのが良さそう
+  #define cosphi 0.707106781  
   float vx=1.0, vy=0.0, vt=0.0;//ここが目標速度、この場合は前進方向に1m/s
-  float L=825.7;
-  u[0]=mps2rpm(-(1/sqrt(2.0))*vx+(1/sqrt(2.0))*vy+L*vt); //右前
-  u[1]=mps2rpm(-(1/sqrt(2.0))*vx-(1/sqrt(2.0))*vy+L*vt); //右後
-  u[2]=mps2rpm((1/sqrt(2.0))*vx-(1/sqrt(2.0))*vy+L*vt);//左後
-  u[3]=mps2rpm((1/sqrt(2.0))*vx+(1/sqrt(2.0))*vy+L*vt);//左前
+  float L=825.735308;
+  u[0]=mps2rpm(-sinphi*vx+cosphi*vy+L*vt); //右前
+  u[1]=mps2rpm(-sinphi*vx-cosphi*vy+L*vt); //右後
+  u[2]=mps2rpm(sinphi*vx-cosphi*vy+L*vt);//左後
+  u[3]=mps2rpm(sinphi*vx+cosphi*vy+L*vt);//左前
 
   //Serial.print(u[0]);//目標速度
   //Serial.print(",");
@@ -84,11 +86,6 @@ void loop(void)
   u[2] = pid2.pid_out(u[2]);
   u[3] = pid3.pid_out(u[3]);
   
-    u[0] = (int)(min(max(-16000, -vx - vy + vt), 16000));
-    u[1] = (int)(min(max(-16000, -vx + vy + vt), 16000));
-    u[2] = (int)(min(max(-16000, vx + vy + vt), 16000));
-    u[3] = (int)(min(max(-16000, vx - vy + vt), 16000)); 
-   
   Serial.println(u[0]);
   Serial.println(u[1]);
   Serial.println(u[2]);
