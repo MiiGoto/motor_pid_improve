@@ -1,7 +1,6 @@
 #include <MsTimer2.h>
 #include <FlexCAN.h>
 #include "PID.h"
-#include <math.h>
 
 typedef struct
 {
